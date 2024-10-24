@@ -7,7 +7,7 @@ on:
 jobs:
   process_command:
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '/onboard')
+    if: contains(github.event.comment.body, '/onboard') || contains(github.event.comment.body, '/offboard')
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -28,16 +28,6 @@ jobs:
         CSV_FILE=$(echo "${{ github.event.comment.body }}" | grep -oP '/onboard \K\S+')
         echo "csv_file=$CSV_FILE" >> $GITHUB_OUTPUT
 
-    - name: Find CSV file
-      id: find_csv
-      run: |
-        CSV_PATH=$(find ${{ github.workspace }} -name "${{ steps.extract_csv.outputs.csv_file }}" -print -quit)
-        if [ -z "$CSV_PATH" ]; then
-          echo "Error: CSV file not found in the repository"
-          exit 1
-        fi
-        echo "csv_path=$CSV_PATH" >> $GITHUB_OUTPUT
-
     - name: Process user request
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,6 +35,7 @@ jobs:
         JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
         JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        GITHUB_EVENT_COMMENT_BODY: ${{ github.event.comment.body }}  # Pass the comment body here
       run: |
         python scripts/process_user_request.py
 
