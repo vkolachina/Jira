@@ -1,0 +1,25 @@
+name: Onboard and Offboard Users
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process_users:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install PyGithub pandas
+
+      - name: Process users
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/process_users.py
