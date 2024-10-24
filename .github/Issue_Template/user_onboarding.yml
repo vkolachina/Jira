@@ -1,39 +1,36 @@
----
 name: User Onboarding/Offboarding
-about: Template for requesting user onboarding or offboarding
+description: Template for requesting user onboarding or offboarding actions
 title: "[User Management]: "
 labels: ["user-management", "automation"]
-assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## User Management Request
 
----
+        Please use this template to request user onboarding or offboarding.
 
-## User Management Request for Onboarding/Offboarding
+        ### Action Required
 
-Please use this template to request user onboarding or offboarding.
+        - [ ] Onboard
+        - [ ] Offboard
 
-### Action Required
+        ### User Details
 
-- [ ] Onboard
-- [ ] Offboard
+        - **Username or Email**: 
+        - **Role**: 
+          - Options: Admin, Write, Read
+        - **Target**: 
+          - Specify the organization or repository (e.g., `owner/repo`)
 
-### User Details
+        ### Additional Information
 
-- **Username or Email**: 
-- **Role**: 
-  - Options: Admin, Write, Read
-- **Target**: 
-  - Specify the organization or repository (e.g., `owner/repo`)
+        Provide any additional context or information here.
 
-### Additional Information
-
-Provide any additional context or information here.
-
----
-
-**Instructions**:
-1. Select the action required (Onboard or Offboard).
-2. Fill in the user details and target.
-3. Submit the issue.
-4. Add a comment to trigger the automation:
-   - `/onboard <filename>.csv` for onboarding
-   - `/offboard <filename>.csv` for offboarding
+        **Instructions**:
+        1. Select the action required (Onboard or Offboard).
+        2. Fill in the user details and target.
+        3. Submit the issue.
+        4. Add a comment to trigger the automation:
+           - `/onboard <filename>.csv` for onboarding
+           - `/offboard <filename>.csv` for offboarding
