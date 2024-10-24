@@ -34,7 +34,7 @@ body:
         4. Add a comment to trigger the automation:
            - `/onboard <filename>.csv` for onboarding
            - `/offboard <filename>.csv` for offboarding
-  - type: input
+  - type: inputs
     id: requester
     attributes:
       label: Requester
