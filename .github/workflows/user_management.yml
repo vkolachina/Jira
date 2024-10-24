@@ -9,57 +9,60 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.event.comment.body, '/onboard')
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests jira
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests jira
 
-      - name: Extract CSV file name
-        id: extract_csv
-        run: |
-          CSV_FILE=$(echo "${{ github.event.comment.body }}" | grep -oP '/onboard \K\S+')
-          echo "csv_file=$CSV_FILE" >> $GITHUB_OUTPUT
+    - name: Extract CSV file name
+      id: extract_csv
+      run: |
+        CSV_FILE=$(echo "${{ github.event.comment.body }}" | grep -oP '/onboard \K\S+')
+        echo "csv_file=$CSV_FILE" >> $GITHUB_OUTPUT
 
-      - name: Find CSV file
-        id: find_csv
-        run: |
-          CSV_PATH=$(find ${{ github.workspace }} -name "${{ steps.extract_csv.outputs.csv_file }}" -print -quit)
-          if [ -z "$CSV_PATH" ]; then
-            echo "Error: CSV file not found in the repository"
-            exit 1
-          fi
-          echo "csv_path=$CSV_PATH" >> $GITHUB_OUTPUT
-
-      - name: Process user request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSV_FILE: ${{ steps.find_csv.outputs.csv_path }}
-        run: |
-          python scripts/process_user_request.py
-
-      - name: Check for failures
-        if: failure()
-        run: |
-          echo "One or more onboarding processes failed. Please check the logs for details."
+    - name: Find CSV file
+      id: find_csv
+      run: |
+        CSV_PATH=$(find ${{ github.workspace }} -name "${{ steps.extract_csv.outputs.csv_file }}" -print -quit)
+        if [ -z "$CSV_PATH" ]; then
+          echo "Error: CSV file not found in the repository"
           exit 1
+        fi
+        echo "csv_path=$CSV_PATH" >> $GITHUB_OUTPUT
 
-      - name: Comment on issue
-        if: always()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              body: 'Onboarding process completed. Please check the action logs for details.'
-            })
+    - name: Process user request
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CSV_FILE: ${{ steps.find_csv.outputs.csv_path }}
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      run: |
+        python scripts/process_user_request.py
+
+    - name: Check for failures
+      if: failure()
+      run: |
+        echo "One or more onboarding processes failed. Please check the logs for details."
+        exit 1
+
+    - name: Comment on issue
+      if: always()
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.name,
+            body: 'Onboarding process completed. Please check the action logs for details.'
+          })
