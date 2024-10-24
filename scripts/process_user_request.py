@@ -4,6 +4,14 @@ import re
 from github_utils import add_user_to_org, add_user_to_repo, remove_user_from_org, remove_user_from_repo
 from jira_utils import create_jira_user, deactivate_jira_user
 
+
+JIRA_BASE_URL = os.getenv('JIRA_BASE_URL')
+JIRA_USER_EMAIL = os.getenv('JIRA_USER_EMAIL')
+JIRA_API_TOKEN = os.getenv('JIRA_API_TOKEN')
+
+if not all([JIRA_BASE_URL, JIRA_USER_EMAIL, JIRA_API_TOKEN]):
+    raise ValueError("One or more Jira environment variables are not set")
+
 def process_command(comment_body):
     command_match = re.match(r'/(\w+)\s+(\S+)\s+(.+)', comment_body)
     if not command_match:
