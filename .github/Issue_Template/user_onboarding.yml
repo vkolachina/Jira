@@ -34,3 +34,11 @@ body:
         4. Add a comment to trigger the automation:
            - `/onboard <filename>.csv` for onboarding
            - `/offboard <filename>.csv` for offboarding
+  - type: inputs
+    id: requester
+    attributes:
+      label: Requester
+      description: Who is requesting this onboarding?
+      placeholder: '@username'
+    validations:
+      required: true         
